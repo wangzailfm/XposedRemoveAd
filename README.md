@@ -5,8 +5,9 @@ jingdong supported versions are 6.0.0/6.1.0/6.1.3/6.1.4/6.2.0/6.2.3/6.2.4/6.3.0/
 
 ### Sample
 #### Weici(微博国际版)
-Remove ads before:
+Remove ads before
 ![before](http://ovlhlis72.bkt.clouddn.com/17-9-29/45001770.jpg)
+
 Remove after the advertising:
 ![after](http://ovlhlis72.bkt.clouddn.com/17-9-29/10446189.jpg)
 ### View the article
