@@ -58,7 +58,7 @@ public class Tutorial implements IXposedHookLoadPackage {
                         return;
                     }
                     // Hook
-                    XposedHelpers.findAndHookMethod(jdClass, getAdMethodNameByVersion(JD_PACKAGE_NAME, packageInfo.versionName), new XC_MethodReplacement() {
+                    XposedHelpers.findAndHookMethod(jdClass, getAdMethodNameByJDVersion(packageInfo.versionName), new XC_MethodReplacement() {
                         @Override
                         protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
                             // 替换掉该方法
@@ -97,8 +97,8 @@ public class Tutorial implements IXposedHookLoadPackage {
                     if (aClass == null) {
                         return;
                     }
-                    // Hook
-                    XposedHelpers.findAndHookMethod(aClass, getAdMethodNameByVersion(WEICO_PACKAGE_NAME, packageInfo.versionName), String.class, new XC_MethodHook() {
+                    // Hook，将display_ad返回的值设置为-1
+                    XposedHelpers.findAndHookMethod(aClass, getAdMethodNameIntByWeicoVersion(packageInfo.versionName), String.class, new XC_MethodHook() {
 
                         @Override
                         protected void afterHookedMethod(MethodHookParam param) throws Throwable {
@@ -110,6 +110,19 @@ public class Tutorial implements IXposedHookLoadPackage {
                             }
                         }
                     });
+                    // 从后台返回前台也会出现广告，当时间超过30分钟，就会出现广告，所以要将ad_display_time设置为当前时间
+                    XposedHelpers.findAndHookMethod(aClass, getAdMethodNameLongByWeicoVersion(packageInfo.versionName), String.class, new XC_MethodHook() {
+
+                        @Override
+                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                            String param1 = (String) param.args[0];
+                            // 如果参数为display_ad的时候将返回值改为-1
+                            if (!TextUtils.isEmpty(param1) && param1.equals("ad_display_time")) {
+                                Log.e("info", "com.weico.international---loadInt---ad_display_time");
+                                param.setResult(System.currentTimeMillis());
+                            }
+                        }
+                    });
                 }
             });
         } catch (Throwable t) {
@@ -118,45 +131,69 @@ public class Tutorial implements IXposedHookLoadPackage {
     }
 
     /**
+     * JD 方法名
      * 根据版本号返回对应方法名
      *
-     * @param packageName 包名
      * @param versionName 版本号
      * @return 方法名
      */
-    private String getAdMethodNameByVersion(String packageName, String versionName) {
+    private String getAdMethodNameByJDVersion(String versionName) {
         versionName = versionName.split("-")[0];
-        switch (packageName) {
-            case WEICO_PACKAGE_NAME:
-                switch (versionName) {
-                    case "2.7.9":
-                    case "2.7.5":
-                        return "locaInt";
-                    default:
-                        return "locaInt";
-                }
-            case JD_PACKAGE_NAME:
+        switch (versionName) {
+            case "6.4.0":
+                return "fr";
+            case "6.3.0":
+                return "hN";
+            case "6.2.4":
+                return "fs";
+            case "6.2.3":
+                return "fs";
+            case "6.2.0":
+                return "fn";
+            case "6.1.3":
+                return "gC";
+            case "6.1.0":
+                return "gC";
+            case "6.0.0":
+                return "gE";
             default:
-                switch (versionName) {
-                    case "6.4.0":
-                        return "fr";
-                    case "6.3.0":
-                        return "hN";
-                    case "6.2.4":
-                        return "fs";
-                    case "6.2.3":
-                        return "fs";
-                    case "6.2.0":
-                        return "fn";
-                    case "6.1.3":
-                        return "gC";
-                    case "6.1.0":
-                        return "gC";
-                    case "6.0.0":
-                        return "gE";
-                    default:
-                        return "fr";
-                }
+                return "fr";
+        }
+    }
+
+    /**
+     * Weico loadInt
+     * 根据版本号返回对应方法名
+     *
+     * @param versionName 版本号
+     * @return 方法名
+     */
+    private String getAdMethodNameIntByWeicoVersion(String versionName) {
+        versionName = versionName.split("-")[0];
+        switch (versionName) {
+            case "2.7.9":
+            case "2.7.5":
+                return "loadInt";
+            default:
+                return "loadInt";
+        }
+    }
+
+    /**
+     * Weico loadLong
+     * 根据版本号返回对应方法名
+     *
+     * @param versionName 版本号
+     * @return 方法名
+     */
+    private String getAdMethodNameLongByWeicoVersion(String versionName) {
+        versionName = versionName.split("-")[0];
+        switch (versionName) {
+            case "2.7.9":
+            case "2.7.5":
+                return "loadLong";
+            default:
+                return "loadLong";
         }
     }
 
