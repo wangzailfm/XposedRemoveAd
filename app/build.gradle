@@ -5,11 +5,11 @@ android {
     buildToolsVersion "25.0.2"
 
     defaultConfig {
-        applicationId "top.jowanxu.xposedtest"
-        minSdkVersion 24
+        applicationId "top.jowanxu.xposedremovead"
+        minSdkVersion 17
         targetSdkVersion 25
-        versionCode 40
-        versionName "0.1.8"
+        versionCode 50
+        versionName "0.2.0"
     }
     buildTypes {
         release {
@@ -24,5 +24,4 @@ dependencies {
     provided files('libs/api-82-sources.jar')
     provided files('libs/api-82.jar')
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:25.1.1'
 }

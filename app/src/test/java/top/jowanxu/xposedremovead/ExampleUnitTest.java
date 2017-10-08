@@ -1,4 +1,4 @@
-package top.jowanxu.xposedtest;
+package top.jowanxu.xposedremovead;
 
 import org.junit.Test;
 

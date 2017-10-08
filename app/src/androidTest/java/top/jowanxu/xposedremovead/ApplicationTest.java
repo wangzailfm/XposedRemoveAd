@@ -1,4 +1,4 @@
-package top.jowanxu.xposedtest;
+package top.jowanxu.xposedremovead;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

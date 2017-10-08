@@ -1,4 +1,4 @@
-package top.jowanxu.xposedtest;
+package top.jowanxu.xposedremovead;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
