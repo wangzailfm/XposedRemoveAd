@@ -1,7 +1,20 @@
 # XposedRemoveAd
-Xposed Remove Weico(微博国际版) and jingdong(京东) start Ad,
-Currently weico supported versions are 2.7.5/2.7.9,
-jingdong supported versions are 6.0.0/6.1.0/6.1.3/6.1.4/6.2.0/6.2.3/6.2.4/6.3.0/6.4.0.
+Xposed Remove Weico(微博国际版) and jingdong(京东) start Ad.
+
+Currently weico supported versions have 
+- 2.7.5
+- 2.7.9
+
+jingdong supported versions have 
+- 6.0.0
+- 6.1.0
+- 6.1.3
+- 6.1.4
+- 6.2.0
+- 6.2.3
+- 6.2.4
+- 6.3.0
+- 6.4.0
 
 ### Sample
 #### Weici(微博国际版)
