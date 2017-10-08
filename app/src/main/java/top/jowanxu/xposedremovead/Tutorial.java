@@ -14,6 +14,8 @@ import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class Tutorial implements IXposedHookLoadPackage {
+    private final String ANDROID_APP_APPLICATION = "android.app.Application";
+    private final String ON_CREATE_METHOD = "onCreate";
     private final String WEICO_PACKAGE_NAME = "com.weico.international";
     private final String WEICO_HOOK_ACTIVITY_NAME = "com.weico.international.activity.v4.Setting";
     private final String JD_PACKAGE_NAME = "com.jingdong.app.mall";
@@ -39,16 +41,16 @@ public class Tutorial implements IXposedHookLoadPackage {
     private void removeJDAd(final XC_LoadPackage.LoadPackageParam lpparam) {
         try {
             // Hook获取上下文
-            Class<?> contextClass = XposedHelpers.findClassIfExists("android.content.ContextWrapper", lpparam.classLoader);
+            Class<?> contextClass = XposedHelpers.findClassIfExists(ANDROID_APP_APPLICATION, lpparam.classLoader);
             if (contextClass == null) {
                 return;
             }
             // Hook
-            XposedHelpers.findAndHookMethod(contextClass, "getApplicationContext", new XC_MethodHook() {
+            XposedHelpers.findAndHookMethod(contextClass, ON_CREATE_METHOD, new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                     // 获取上下文
-                    Context context = (Context) param.getResult();
+                    Context context = (Context) param.thisObject;
                     PackageManager packageManager = context.getPackageManager();
                     // 获取app版本
                     PackageInfo packageInfo = packageManager.getPackageInfo(lpparam.packageName, 0);
@@ -79,16 +81,16 @@ public class Tutorial implements IXposedHookLoadPackage {
     private void removeWeicoAd(final XC_LoadPackage.LoadPackageParam lpparam) {
         try {
             // Hook获取上下文
-            Class<?> contextClass = XposedHelpers.findClassIfExists("android.content.ContextWrapper", lpparam.classLoader);
+            Class<?> contextClass = XposedHelpers.findClassIfExists(ANDROID_APP_APPLICATION, lpparam.classLoader);
             if (contextClass == null) {
                 return;
             }
             // Hook
-            XposedHelpers.findAndHookMethod(contextClass, "getApplicationContext", new XC_MethodHook() {
+            XposedHelpers.findAndHookMethod(contextClass, ON_CREATE_METHOD, new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                     // 获取上下文
-                    Context context = (Context) param.getResult();
+                    Context context = (Context) param.thisObject;
                     PackageManager packageManager = context.getPackageManager();
                     // 获取app版本
                     PackageInfo packageInfo = packageManager.getPackageInfo(lpparam.packageName, 0);
