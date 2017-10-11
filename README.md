@@ -2,12 +2,12 @@
 Xposed Remove Weico(微博国际版) and jingdong(京东) start Ad.
 
 Currently weico supported versions have(contains background to foreground ad)
-- 2.7.5
 - 2.7.9
+- 2.7.5
 
 jingdong supported versions have 
-- 6.3.0
 - 6.4.0
+- 6.3.0
 
 ### Sample
 #### Weico(微博国际版)
