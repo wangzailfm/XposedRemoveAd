@@ -3,8 +3,9 @@ package top.jowanxu.xposedremovead;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
+import android.view.LayoutInflater;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
@@ -13,10 +14,16 @@ import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class Tutorial implements IXposedHookLoadPackage {
+    private static final String LOG_HOOK = "Hook ";
+    private static final String LOG_HOOK_ERROR_STR = " 出错";
     private final String ANDROID_APP_APPLICATION = "android.app.Application";
     private final String ON_CREATE_METHOD = "onCreate";
     private final String WEICO_PACKAGE_NAME = "com.weico.international";
     private final String WEICO_HOOK_ACTIVITY_NAME = "com.weico.international.activity.v4.Setting";
+    private final String JD_PACKAGE_NAME = "com.jingdong.app.mall";
+    private final String JD_HOOK_CLASS_NAME = "com.jingdong.app.mall.SplashFragment";
+    private final String ON_CREATE_VIEWS = "onCreateViews";
+    private final String FINISH = "finish";
 
     @Override
     public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
@@ -24,6 +31,46 @@ public class Tutorial implements IXposedHookLoadPackage {
         if (lpparam.packageName.equals(WEICO_PACKAGE_NAME)) {
             removeWeicoAd(lpparam);
             return;
+        }
+        // 京东
+        if (lpparam.packageName.equals(JD_PACKAGE_NAME)) {
+            removeJDAd(lpparam);
+        }
+    }
+
+    /**
+     * 去除京东启动广告
+     * @param lpparam LoadPackageParam
+     */
+    private void removeJDAd(final XC_LoadPackage.LoadPackageParam lpparam) {
+        try {
+            // Hook获取上下文
+            Class<?> contextClass = XposedHelpers.findClassIfExists(ANDROID_APP_APPLICATION, lpparam.classLoader);
+            if (contextClass == null) {
+                return;
+            }
+            // Hook
+            XposedHelpers.findAndHookMethod(contextClass, ON_CREATE_METHOD, new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    // 获取上下文
+                    final Context context = (Context) param.thisObject;
+                    // 获取Hook的Class
+                    final Class<?> jdClass = XposedHelpers.findClassIfExists(JD_HOOK_CLASS_NAME, lpparam.classLoader);
+                    if (jdClass == null) {
+                        return;
+                    }
+                    // Hook
+                    XposedHelpers.findAndHookMethod(jdClass, ON_CREATE_VIEWS, LayoutInflater.class, Bundle.class, new XC_MethodHook() {
+                        @Override
+                        protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                            XposedHelpers.callMethod(param.thisObject, FINISH);
+                        }
+                    });
+                }
+            });
+        } catch (Throwable t) {
+            printErrorLog(JD_HOOK_CLASS_NAME, t);
         }
     }
 
@@ -60,7 +107,6 @@ public class Tutorial implements IXposedHookLoadPackage {
                             String param1 = (String) param.args[0];
                             // 如果参数为display_ad的时候将返回值改为-1
                             if (!TextUtils.isEmpty(param1) && param1.equals("display_ad")) {
-                                Log.e("info", "com.weico.international---loadInt---display_ad");
                                 param.setResult(-1);
                             }
                         }
@@ -73,7 +119,6 @@ public class Tutorial implements IXposedHookLoadPackage {
                             String param1 = (String) param.args[0];
                             // 如果参数为display_ad的时候将返回值改为-1
                             if (!TextUtils.isEmpty(param1) && param1.equals("ad_display_time")) {
-                                Log.e("info", "com.weico.international---loadInt---ad_display_time");
                                 param.setResult(System.currentTimeMillis());
                             }
                         }
@@ -81,7 +126,7 @@ public class Tutorial implements IXposedHookLoadPackage {
                 }
             });
         } catch (Throwable t) {
-            XposedBridge.log("Hook " + WEICO_HOOK_ACTIVITY_NAME + " 出错" + t);
+            printErrorLog(WEICO_HOOK_ACTIVITY_NAME, t);
         }
     }
 
@@ -119,6 +164,15 @@ public class Tutorial implements IXposedHookLoadPackage {
             default:
                 return "loadLong";
         }
+    }
+
+    /**
+     * 打印错误
+     * @param packageName 包名
+     * @param t Throwable
+     */
+    private void printErrorLog(String packageName, Throwable t) {
+        XposedBridge.log(LOG_HOOK + packageName + LOG_HOOK_ERROR_STR + t);
     }
 
 }
