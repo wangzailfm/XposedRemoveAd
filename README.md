@@ -34,8 +34,8 @@ Remove after the advertising：
 
 Remove ads before：
 
-![before](http://ovlhlis72.bkt.clouddn.com/20171011_090144.gif)
+![before](./20171011_085752.gif)
 
 Remove after the advertising：
 
-![after](http://ovlhlis72.bkt.clouddn.com/20171011_085752.gif)
+![after](./20171011_090144.gif)
