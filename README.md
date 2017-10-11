@@ -8,6 +8,8 @@ Currently weico supported versions have(contains background to foreground ad)
 jingdong supported versions have 
 - 6.4.0
 - 6.3.0
+- 6.2.4
+
 
 ### Sample
 #### Weico(微博国际版)
