@@ -5,10 +5,10 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
@@ -16,14 +16,15 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 public class Tutorial implements IXposedHookLoadPackage {
     private static final String LOG_HOOK = "Hook ";
     private static final String LOG_HOOK_ERROR_STR = " 出错";
-    private final String ANDROID_APP_APPLICATION = "android.app.Application";
-    private final String ON_CREATE_METHOD = "onCreate";
-    private final String WEICO_PACKAGE_NAME = "com.weico.international";
-    private final String WEICO_HOOK_ACTIVITY_NAME = "com.weico.international.activity.v4.Setting";
-    private final String JD_PACKAGE_NAME = "com.jingdong.app.mall";
-    private final String JD_HOOK_CLASS_NAME = "com.jingdong.app.mall.SplashFragment";
-    private final String ON_CREATE_VIEWS = "onCreateViews";
-    private final String FINISH = "finish";
+    private static final String ANDROID_APP_APPLICATION = "android.app.Application";
+    private static final String ON_CREATE_METHOD = "onCreate";
+    private static final String WEICO_PACKAGE_NAME = "com.weico.international";
+    private static final String WEICO_HOOK_ACTIVITY_NAME = "com.weico.international.activity.v4.Setting";
+    private static final String JD_PACKAGE_NAME = "com.jingdong.app.mall";
+    private static final String JD_HOOK_CLASS_NAME = "com.jingdong.app.mall.MainFrameActivity";
+    private static final String JD_HOOK_METHOD_NAME = "addGuideImage";
+    private static final String JD_HOOK_CLASS_COMMON_NAME = "com.jingdong.common.BaseFrameUtil";
+    private static final String JD_HOOK_FIELD_NAME = "needStartImage";
 
     @Override
     public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
@@ -44,29 +45,30 @@ public class Tutorial implements IXposedHookLoadPackage {
      */
     private void removeJDAd(final XC_LoadPackage.LoadPackageParam lpparam) {
         try {
-            // Hook获取上下文
-            Class<?> contextClass = XposedHelpers.findClassIfExists(ANDROID_APP_APPLICATION, lpparam.classLoader);
-            if (contextClass == null) {
+            // 主界面Class
+            Class<?> mainFrameClass = XposedHelpers.findClassIfExists(JD_HOOK_CLASS_NAME, lpparam.classLoader);
+            if (mainFrameClass == null) {
                 return;
             }
-            // Hook
-            XposedHelpers.findAndHookMethod(contextClass, ON_CREATE_METHOD, new XC_MethodHook() {
+            // Hook onCreate方法，将needStartImage改为false
+            XposedHelpers.findAndHookMethod(mainFrameClass, ON_CREATE_METHOD, Bundle.class, new XC_MethodHook() {
                 @Override
-                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                    // 获取上下文
-                    final Context context = (Context) param.thisObject;
-                    // 获取Hook的Class
-                    final Class<?> jdClass = XposedHelpers.findClassIfExists(JD_HOOK_CLASS_NAME, lpparam.classLoader);
-                    if (jdClass == null) {
+                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                    // 获取Class
+                    Class<?> baseFrameUtilClass = XposedHelpers.findClassIfExists(JD_HOOK_CLASS_COMMON_NAME, lpparam.classLoader);
+                    if (baseFrameUtilClass == null) {
                         return;
                     }
-                    // Hook
-                    XposedHelpers.findAndHookMethod(jdClass, ON_CREATE_VIEWS, LayoutInflater.class, Bundle.class, new XC_MethodHook() {
-                        @Override
-                        protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                            XposedHelpers.callMethod(param.thisObject, FINISH);
-                        }
-                    });
+                    // 将needStartImage改为false，不显示广告
+                    XposedHelpers.setStaticBooleanField(baseFrameUtilClass, JD_HOOK_FIELD_NAME, false);
+                }
+            });
+            // Hook addGuideImage方法，不显示有视频广告
+            XposedHelpers.findAndHookMethod(mainFrameClass, JD_HOOK_METHOD_NAME, new XC_MethodReplacement() {
+                @Override
+                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                    // 消除addGuideImage
+                    return null;
                 }
             });
         } catch (Throwable t) {
