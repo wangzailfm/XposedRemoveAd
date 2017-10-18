@@ -3,16 +3,17 @@ package top.jowanxu.xposedremovead;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.os.Bundle;
 import android.text.TextUtils;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
+/**
+ * @author Jowan
+ */
 public class Tutorial implements IXposedHookLoadPackage {
     private static final String LOG_HOOK = "Hook ";
     private static final String LOG_HOOK_ERROR_STR = " 出错";
@@ -20,11 +21,8 @@ public class Tutorial implements IXposedHookLoadPackage {
     private static final String ON_CREATE_METHOD = "onCreate";
     private static final String WEICO_PACKAGE_NAME = "com.weico.international";
     private static final String WEICO_HOOK_ACTIVITY_NAME = "com.weico.international.activity.v4.Setting";
-    private static final String JD_PACKAGE_NAME = "com.jingdong.app.mall";
-    private static final String JD_HOOK_CLASS_NAME = "com.jingdong.app.mall.MainFrameActivity";
-    private static final String JD_HOOK_METHOD_NAME = "addGuideImage";
-    private static final String JD_HOOK_CLASS_COMMON_NAME = "com.jingdong.common.BaseFrameUtil";
-    private static final String JD_HOOK_FIELD_NAME = "needStartImage";
+    private static final String DISPLAY_AD = "display_ad";
+    private static final String AD_DISPLAY_TIME = "ad_display_time";
 
     @Override
     public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
@@ -32,47 +30,6 @@ public class Tutorial implements IXposedHookLoadPackage {
         if (lpparam.packageName.equals(WEICO_PACKAGE_NAME)) {
             removeWeicoAd(lpparam);
             return;
-        }
-        // 京东
-        if (lpparam.packageName.equals(JD_PACKAGE_NAME)) {
-            removeJDAd(lpparam);
-        }
-    }
-
-    /**
-     * 去除京东启动广告
-     * @param lpparam LoadPackageParam
-     */
-    private void removeJDAd(final XC_LoadPackage.LoadPackageParam lpparam) {
-        try {
-            // 主界面Class
-            Class<?> mainFrameClass = XposedHelpers.findClassIfExists(JD_HOOK_CLASS_NAME, lpparam.classLoader);
-            if (mainFrameClass == null) {
-                return;
-            }
-            // Hook onCreate方法，将needStartImage改为false
-            XposedHelpers.findAndHookMethod(mainFrameClass, ON_CREATE_METHOD, Bundle.class, new XC_MethodHook() {
-                @Override
-                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                    // 获取Class
-                    Class<?> baseFrameUtilClass = XposedHelpers.findClassIfExists(JD_HOOK_CLASS_COMMON_NAME, lpparam.classLoader);
-                    if (baseFrameUtilClass == null) {
-                        return;
-                    }
-                    // 将needStartImage改为false，不显示广告
-                    XposedHelpers.setStaticBooleanField(baseFrameUtilClass, JD_HOOK_FIELD_NAME, false);
-                }
-            });
-            // Hook addGuideImage方法，不显示有视频广告
-            XposedHelpers.findAndHookMethod(mainFrameClass, JD_HOOK_METHOD_NAME, new XC_MethodReplacement() {
-                @Override
-                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                    // 消除addGuideImage
-                    return null;
-                }
-            });
-        } catch (Throwable t) {
-            printErrorLog(JD_HOOK_CLASS_NAME, t);
         }
     }
 
@@ -108,7 +65,7 @@ public class Tutorial implements IXposedHookLoadPackage {
                         protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                             String param1 = (String) param.args[0];
                             // 如果参数为display_ad的时候将返回值改为-1
-                            if (!TextUtils.isEmpty(param1) && param1.equals("display_ad")) {
+                            if (!TextUtils.isEmpty(param1) && DISPLAY_AD.equals(param1)) {
                                 param.setResult(-1);
                             }
                         }
@@ -120,7 +77,7 @@ public class Tutorial implements IXposedHookLoadPackage {
                         protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                             String param1 = (String) param.args[0];
                             // 如果参数为display_ad的时候将返回值改为-1
-                            if (!TextUtils.isEmpty(param1) && param1.equals("ad_display_time")) {
+                            if (!TextUtils.isEmpty(param1) && AD_DISPLAY_TIME.equals(param1)) {
                                 param.setResult(System.currentTimeMillis());
                             }
                         }

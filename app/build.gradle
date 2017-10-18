@@ -1,15 +1,22 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        release {
+            keyAlias 'xposedremovead'
+            keyPassword 'wangzai'
+            storeFile file('C:/Users/pc/AndroidStudioProjects/AppSign.jks')
+            storePassword 'wangzai'
+        }
+    }
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
-
+    buildToolsVersion "25.0.3"
     defaultConfig {
         applicationId "top.jowanxu.xposedremovead"
         minSdkVersion 17
         targetSdkVersion 25
-        versionCode 58
-        versionName "0.2.5"
+        versionCode 61
+        versionName "1.0.0"
     }
     buildTypes {
         release {

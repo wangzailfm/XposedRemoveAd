@@ -1,5 +1,5 @@
 # XposedRemoveAd
-Xposed Remove Weico(微博国际版) and jingdong(京东) start Ad.
+Xposed Remove Weico(微博国际版) start Ad.
 
 ### Sample
 #### Weico(微博国际版)

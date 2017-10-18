@@ -10,23 +10,13 @@
         android:theme="@android:style/Theme.Holo.Light">
         <meta-data
             android:name="xposedmodule"
-            android:value="true" />
+            android:value="true"/>
         <meta-data
             android:name="xposeddescription"
-            android:value="Remove Start AD" />
+            android:value="Remove Start AD"/>
         <meta-data
             android:name="xposedminversion"
-            android:value="53" />
-
-        <activity
-            android:name=".MainActivity"
-            android:launchMode="singleTop">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
+            android:value="53"/>
     </application>
 
 </manifest>
