@@ -2,11 +2,11 @@ package top.jowanxu.xposedremovead
 
 import android.content.Context
 import android.util.Log
-import de.robv.android.xposed.IXposedHookLoadPackage
-import de.robv.android.xposed.XC_MethodHook
-import de.robv.android.xposed.XposedBridge
-import de.robv.android.xposed.XposedHelpers
+import de.robv.android.xposed.*
 import de.robv.android.xposed.callbacks.XC_LoadPackage
+
+
+fun loge(tag: String, content: String) = Log.e(tag, content)
 
 /**
  * @author Jowan
@@ -15,13 +15,12 @@ class Tutorial : IXposedHookLoadPackage {
 
     @Throws(Throwable::class)
     override fun handleLoadPackage(lpParam: XC_LoadPackage.LoadPackageParam) {
-        // 微博国际版
-        if (lpParam.packageName == WEICO_PACKAGE_NAME) {
-            removeWeicoAd(lpParam)
+        when (lpParam.packageName) {
+            // 微博国际版
+            WEICO_PACKAGE_NAME -> removeWeicoAd(lpParam)
+            TOP_JOWANXU_XPOSEDREMOVEAD -> checkModuleLoaded(lpParam)
         }
     }
-
-    fun loge(tag: String, content: String) = Log.e(tag, content)
 
     fun tryHook(packageName: String, hook: () -> Unit) {
         try {
@@ -29,6 +28,20 @@ class Tutorial : IXposedHookLoadPackage {
         } catch (t: Throwable) {
             XposedBridge.log("$LOG_HOOK$packageName$LOG_HOOK_ERROR_STR$t")
             loge(TAG, "$LOG_HOOK$packageName$LOG_HOOK_ERROR_STR$t")
+        }
+    }
+
+    /**
+     * 判断模块是否加载成功
+     */
+    private fun checkModuleLoaded(lpParam: XC_LoadPackage.LoadPackageParam) {
+        // 获取Class
+        val activityClass = XposedHelpers.findClassIfExists(TOP_JOWANXU_XPOSEDREMOVEAD_ACTIVITY, lpParam.classLoader) ?: return
+        tryHook(TOP_JOWANXU_XPOSEDREMOVEAD) {
+            // 将方法返回值返回为true
+            XposedHelpers.findAndHookMethod(activityClass, HOOK_XPOSEDREMOVEAD_METHOD_NAME, object : XC_MethodReplacement() {
+                override fun replaceHookedMethod(param: MethodHookParam?): Any = true
+            })
         }
     }
 
@@ -108,6 +121,9 @@ class Tutorial : IXposedHookLoadPackage {
     }
 
     companion object {
+        private val TOP_JOWANXU_XPOSEDREMOVEAD = "top.jowanxu.xposedremovead"
+        private val TOP_JOWANXU_XPOSEDREMOVEAD_ACTIVITY = "top.jowanxu.xposedremovead.MainActivity"
+        private val HOOK_XPOSEDREMOVEAD_METHOD_NAME = "isModuleLoaded"
         private val LOG_HOOK = "Hook "
         private val LOG_HOOK_ERROR_STR = " 出错"
         private val ANDROID_APP_APPLICATION = "android.app.Application"

@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">XposedRemoveAd</string>
+    <string name="module_loaded_failed">Module loaded failed</string>
+    <string name="module_loaded_success">Module loaded success</string>
 </resources>

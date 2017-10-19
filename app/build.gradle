@@ -8,8 +8,8 @@ android {
         applicationId "top.jowanxu.xposedremovead"
         minSdkVersion 17
         targetSdkVersion 25
-        versionCode 63
-        versionName "1.1.0"
+        versionCode 64
+        versionName "1.1.1"
     }
     buildTypes {
         release {
