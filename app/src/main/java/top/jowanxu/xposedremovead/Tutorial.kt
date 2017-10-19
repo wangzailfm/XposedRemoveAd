@@ -5,9 +5,6 @@ import android.util.Log
 import de.robv.android.xposed.*
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 
-
-fun loge(tag: String, content: String) = Log.e(tag, content)
-
 /**
  * @author Jowan
  */
@@ -21,6 +18,8 @@ class Tutorial : IXposedHookLoadPackage {
             TOP_JOWANXU_XPOSEDREMOVEAD -> checkModuleLoaded(lpParam)
         }
     }
+
+    fun loge(tag: String, content: String) = Log.e(tag, content)
 
     fun tryHook(packageName: String, hook: () -> Unit) {
         try {
