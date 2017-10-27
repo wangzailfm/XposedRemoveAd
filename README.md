@@ -13,9 +13,7 @@ Remove after the advertising：
 ![after](http://ovlhlis72.bkt.clouddn.com/17-9-29/10446189.jpg)
 
 ### Support
-Currently weico supported versions have(contains background to foreground ad)
-- 2.7.9
-- 2.7.5
+Currently weico supported versions 2.5.7 later.
 
 
 ### View the article

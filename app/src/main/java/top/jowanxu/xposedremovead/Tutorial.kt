@@ -104,7 +104,7 @@ class Tutorial : IXposedHookLoadPackage {
      * @return 方法名
      */
     private fun getAdMethodNameIntByWeicoVersion(versionName: String): String = when (versionName) {
-        "2.7.9", "2.7.5-5", "2.7.5" -> "loadInt"
+        "2.6.2", "2.6.1", "2.5.9", "2.5.7-5", "2.5.7" -> "loadInt"
         else -> "loadInt"
     }
 
@@ -115,7 +115,7 @@ class Tutorial : IXposedHookLoadPackage {
      * @return 方法名
      */
     private fun getAdMethodNameLongByWeicoVersion(versionName: String): String = when (versionName) {
-        "2.7.9", "2.7.5-5", "2.7.5" -> "loadLong"
+        "2.6.2", "2.6.1", "2.5.9", "2.5.7-5", "2.5.7" -> "loadLong"
         else -> "loadLong"
     }
 
